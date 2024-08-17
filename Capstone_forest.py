@@ -13,48 +13,38 @@ class ConcreteStrengthPredictor:
     def __init__(self, file_path):
         self._data = pd.read_csv(file_path)
 
+        # Using RandomForestRegressor for the model
         self._model = RandomForestRegressor(random_state=21, n_estimators=100)
         self._scaler = StandardScaler()
-        self._pca = PCA(n_components=1)
 
         self._X_train = self._X_test = self._y_train = self._y_test = None
-        self._X_train_pca = self._X_test_pca = None
+        self._X_train_scaled = self._X_test_scaled = None
 
         self._predictions = None
-
-    # def _addReciprocalLogFeatures(self, numeric):
-    #     """Add reciprocal logarithmic features to the numeric data."""
-    #     log_feats = numeric.copy()
-    #     valid = (log_feats != 1) & (log_feats > 0)
-    #     log_feats[valid] = np.log(log_feats[valid]) / np.log(10)
-    #     log_feats[log_feats <= 0] = 1e-10
-    #     rec_log_feats = 1 / log_feats
-    #     return np.hstack([numeric, rec_log_feats, numeric * rec_log_feats])
 
     def prepare_data(self):
         X = self._data.drop(columns='strength')
         y = self._data['strength']
 
-        # X_enhanced = self._addReciprocalLogFeatures(X.values)
-
+        # Train-test split
         self._X_train, self._X_test, self._y_train, self._y_test = train_test_split(X, y, test_size=0.2, random_state=21)
 
-        X_train_scaled = self._scaler.fit_transform(self._X_train)
-        X_test_scaled = self._scaler.transform(self._X_test)
+        # Scaling the features
+        self._X_train_scaled = self._scaler.fit_transform(self._X_train)
+        self._X_test_scaled = self._scaler.transform(self._X_test)
 
-        self._X_train_pca = self._pca.fit_transform(X_train_scaled)
-        self._X_test_pca = self._pca.transform(X_test_scaled)
 
     
     def train_model(self):
-        scores = cross_val_score(self._model, self._X_train_pca, self._y_train, cv=5, scoring='r2')
+        # Perform cross-validation to assess model performance
+        scores = cross_val_score(self._model, self._X_train_scaled, self._y_train, cv=5, scoring='r2')
         print(f"Cross-Validation R² Scores: {scores}")
         print(f"Average R² Score: {scores.mean():.2f}")
 
-        self._model.fit(self._X_train_pca, self._y_train)
+        self._model.fit(self._X_train_scaled, self._y_train)
 
     def evaluate_model(self):
-        self._predictions = self._model.predict(self._X_test_pca)
+        self._predictions = self._model.predict(self._X_test_scaled)
 
         r2 = r2_score(self._y_test, self._predictions)
         mse = mean_squared_error(self._y_test, self._predictions)
@@ -63,31 +53,31 @@ class ConcreteStrengthPredictor:
         print(f"Mean Squared Error: {mse:.2f}")
 
     def visualize_results(self):
-        # Scatter plot of actual vs PCA
+        # Scatter plot of actual vs predicted
         source_actual = ColumnDataSource(data=dict(
-            PCA=self._X_test_pca.flatten(),
+            Index=np.arange(len(self._y_test)),
             strength=self._y_test
         ))
 
-        p1 = figure(title="PCA vs Actual Strength", x_axis_label='PCA Component', y_axis_label='Actual Strength', width=400, height=400)
-        p1.scatter('PCA', 'strength', source=source_actual, color="blue", legend_label="Actual")
+        p1 = figure(title="Actual Strength", x_axis_label='Index', y_axis_label='Actual Strength', width=400, height=400)
+        p1.scatter('Index', 'strength', source=source_actual, color="blue", legend_label="Actual")
 
-        # Scatter plot of predicted vs PCA
+        # Scatter plot of predicted vs actual
         source_predicted = ColumnDataSource(data=dict(
-            PCA=self._X_test_pca.flatten(),
+            Index=np.arange(len(self._y_test)),
             strength=self._predictions
         ))
 
-        p2 = figure(title="PCA vs Predicted Strength", x_axis_label='PCA Component', y_axis_label='Predicted Strength', width=400, height=400)
-        p2.scatter('PCA', 'strength', source=source_predicted, color="red", legend_label="Predicted")
+        p2 = figure(title="Predicted Strength", x_axis_label='Index', y_axis_label='Predicted Strength', width=400, height=400)
+        p2.scatter('Index', 'strength', source=source_predicted, color="red", legend_label="Predicted")
 
-        # Combined scatter plot of actual and predicted vs PCA
-        p3 = figure(title="PCA vs Actual and Predicted Strength", x_axis_label='PCA Component', y_axis_label='Strength', width=400, height=400)
-        p3.scatter('PCA', 'strength', source=source_actual, color="blue", legend_label="Actual")
-        p3.scatter('PCA', 'strength', source=source_predicted, color="red", legend_label="Predicted", alpha=0.6)
+        # Combined scatter plot of actual and predicted
+        p3 = figure(title="Actual vs Predicted Strength", x_axis_label='Index', y_axis_label='Strength', width=400, height=400)
+        p3.scatter('Index', 'strength', source=source_actual, color="blue", legend_label="Actual")
+        p3.scatter('Index', 'strength', source=source_predicted, color="red", legend_label="Predicted", alpha=0.6)
 
         hover = HoverTool()
-        hover.tooltips = [("PCA", "@PCA"), ("Strength", "@strength")]
+        hover.tooltips = [("Index", "@Index"), ("Strength", "@strength")]
         p1.add_tools(hover)
         p2.add_tools(hover)
         p3.add_tools(hover)

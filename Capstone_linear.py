@@ -22,22 +22,11 @@ class ConcreteStrengthPredictor:
 
         self._predictions = None
 
-    def _addReciprocalLogFeatures(self, numeric):
-        """Add reciprocal logarithmic features to the numeric data."""
-        log_feats = numeric.copy()
-        valid = (log_feats != 1) & (log_feats > 0)
-        log_feats[valid] = np.log(log_feats[valid]) / np.log(10)
-        log_feats[log_feats <= 0] = 1e-10
-        rec_log_feats = 1 / log_feats
-        return np.hstack([numeric, rec_log_feats, numeric * rec_log_feats])
-
     def prepare_data(self):
         X = self._data.drop(columns='strength')
         y = self._data['strength']
 
-        X_enhanced = self._addReciprocalLogFeatures(X.values)
-
-        self._X_train, self._X_test, self._y_train, self._y_test = train_test_split(X_enhanced, y, test_size=0.2, random_state=21)
+        self._X_train, self._X_test, self._y_train, self._y_test = train_test_split(X, y, test_size=0.2, random_state=21)
 
         X_train_scaled = self._scaler.fit_transform(self._X_train)
         X_test_scaled = self._scaler.transform(self._X_test)

@@ -59,10 +59,13 @@ class ConcreteStrengthPredictor:
         print(f"Mean Squared Error: {mse:.2f}")
 
     def visualize_results(self):
+        # Ensure PCA and strength arrays are the same length
+        pca_component = self._X_test_pca[:, 0]  # Assuming we want to visualize the first PCA component
+
         # Scatter plot of actual vs PCA
         source_actual = ColumnDataSource(data=dict(
-        PCA=self._X_test_pca.flatten(),
-        strength=self._y_test
+            PCA=pca_component,
+            strength=self._y_test
         ))
 
         p1 = figure(title="PCA vs Actual Strength", x_axis_label='PCA Component', y_axis_label='Actual Strength', width=400, height=400)
@@ -70,8 +73,8 @@ class ConcreteStrengthPredictor:
 
         # Scatter plot of predicted vs PCA
         source_predicted = ColumnDataSource(data=dict(
-        PCA=self._X_test_pca.flatten(),
-        strength=self._predictions
+            PCA=pca_component,
+            strength=self._predictions
         ))
 
         p2 = figure(title="PCA vs Predicted Strength", x_axis_label='PCA Component', y_axis_label='Predicted Strength', width=400, height=400)

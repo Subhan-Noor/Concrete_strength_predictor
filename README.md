@@ -1,21 +1,36 @@
 # 🧱 Concrete Strength Predictor
 
-A machine learning model that predicts the compressive strength of concrete based on its composition using Random Forest Regression. Includes extensive visualizations of results, residuals, feature importance, and learning curves.
+A machine learning project to predict the compressive strength of concrete based on its composition. This project features two models — a **Random Forest Regressor** for high-accuracy predictions, and a **Linear Ridge Regression** model with PCA for dimensionality reduction. Both models include rich visualizations using Bokeh.
 
 ---
 
 ## 📊 Features
 
-- Reads and processes concrete composition data from CSV
-- Trains a `RandomForestRegressor` model with 90%+ R² accuracy
-- Evaluates performance using cross-validation and test set metrics
-- Visualizes:
-  - Actual vs Predicted Strength
-  - Feature Importances
-  - Residual Errors
-  - Error Distributions
-  - Learning Curves
-- Supports both Random Forest and Linear Regression models (in separate files)
+- Predicts concrete compressive strength using supervised learning
+- Supports two model versions:
+  - **Random Forest**: High performance and full diagnostic plots
+  - **Linear Ridge Regression with PCA**: Simpler model with dimensionality reduction
+- Cross-validation scoring and test set evaluation
+- Interactive visualizations:
+  - Actual vs Predicted strength
+  - Residual analysis
+  - Feature importance (Random Forest)
+  - PCA component vs strength (Linear)
+  - Learning curve (Random Forest)
+  - Error distribution histogram
+
+---
+
+## 🧪 Model Performance
+
+**Random Forest Regressor:**
+- Cross-Validation R² Score: ~0.90
+- Test Set R² Score: ~0.89
+- MSE: (Displayed on evaluation)
+
+**Linear Ridge Regression:**
+- Model Score and MSE printed after training
+- Uses top 4 PCA components to simplify features
 
 ---
 
@@ -44,25 +59,8 @@ A machine learning model that predicts the compressive strength of concrete base
 3. Run the script:
     ```bash
     python Capstone_forest.py
+    python Capstone_linear.py
     ```
-
----
-
-## 📈 Example Outputs
-
-### Feature Importance Plot
-*(include a screenshot of the bar chart)*
-
-### Actual vs Predicted Strength
-*(include a sample image)*
-
----
-
-## 🧠 Model Performance
-
-- Cross-Validation R² Score: ~0.90
-- Test Set R² Score: ~0.89
-- MSE: _(insert number if you want)_
 
 ---
 

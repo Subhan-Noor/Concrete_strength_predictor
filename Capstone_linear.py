@@ -85,9 +85,10 @@ class ConcreteStrengthPredictor:
     
         show(grid)
 
-file_path = 'concrete.csv'
-predictor = ConcreteStrengthPredictor(file_path)
-predictor.prepare_data()
-predictor.train_model()
-predictor.evaluate_model()
-predictor.visualize_results()
+if __name__ == "__main__":
+    file_path = 'concrete_data.csv'
+    predictor = ConcreteStrengthPredictor(file_path)
+    predictor.prepare_data()
+    predictor.train_model()
+    predictor.evaluate_model()
+    predictor.visualize_results()

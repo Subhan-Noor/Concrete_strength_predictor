@@ -245,4 +245,5 @@ class ConcreteStrengthPredictor:
         
         show(p)
 
-main()
+if __name__ == "__main__":
+    main()

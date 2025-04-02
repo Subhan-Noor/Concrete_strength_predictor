@@ -11,7 +11,7 @@ from bokeh.layouts import gridplot
 
 def main():
     # Define the file path to your dataset
-    file_path = 'concrete.csv'  # Replace with the correct path to your dataset
+    file_path = 'concrete_data.csv'  # Replace with the correct path to your dataset
 
     # Initialize the ConcreteStrengthPredictor class
     predictor = ConcreteStrengthPredictor(file_path)
